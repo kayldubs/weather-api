@@ -2,6 +2,7 @@ var cityList = $("#city-list");
 var allCities = [];
 var sourceKey = "fc8bffadcdca6a94d021c093eac22797";
 
+//date format from stackOF
 function dayFormat(date) {
     var date = new Date();
     console.log(date);
@@ -14,10 +15,10 @@ function dayFormat(date) {
     return dateOutput
 }
 
+//trigger search
+start();
 
-init();
-
-function init() {
+function start() {
     var storeCities = JSON.parse(localStorage.getItem("allCities"));
     if (storeCities !== null) {
         allCities = storeCities;
@@ -32,7 +33,7 @@ function saveCities() {
 
 function renderCities() {
     cityList.empty();
-    //forloop li for each city
+    //find city by looping through the search API by city
     for (var i=0; i < allCities.length; i++) {
         var city = allCities[i];
         var li = $("<li>").text(city);
@@ -59,7 +60,7 @@ $("#add-city").on("click", function(event) {
     saveCities();
     renderCities();
 });
-
+// start weather search implementation 
 function getWeather(cityName) {
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" +cityName+ "&appid=" + sourceKey;
     $("#today-weather").empty();
@@ -68,7 +69,7 @@ function getWeather(cityName) {
       method: "GET"
     }).then(function(response) {
         
-      // Create a new table row element
+      // All current day weather table creation to output display
       cityTitle = $("<h3>").text(response.name + " "+ dayFormat());
       $("#today-weather").append(cityTitle);
       var TempetureToNum = parseInt((response.main.temp)* 9/5 - 459);
@@ -81,7 +82,7 @@ function getWeather(cityName) {
       var CoordLon = response.coord.lon;
       var CoordLat = response.coord.lat;
     
-        //Api to get UV index
+        //Api for UV index
         var queryURL2 = "https://api.openweathermap.org/data/2.5/uvi?appid="+ sourceKey+ "&lat=" + CoordLat +"&lon=" + CoordLon;
         $.ajax({
             url: queryURL2,
@@ -132,16 +133,6 @@ function getWeather(cityName) {
                     (month<10 ? '0' : '') + month + '/' +
                     (day<10 ? '0' : '') + day;
                     var Fivedayh4 = $("<h6>").text(dayOutput);
-                    //Set src to the imags
-                    var imgtag = $("<img>");
-                    var skyconditions = response5day.list[i].weather[0].main;
-                    if(skyconditions==="Clouds"){
-                        imgtag.attr("src", "https://img.icons8.com/color/48/000000/cloud.png")
-                    } else if(skyconditions==="Clear"){
-                        imgtag.attr("src", "https://img.icons8.com/color/48/000000/summer.png")
-                    }else if(skyconditions==="Rain"){
-                        imgtag.attr("src", "https://img.icons8.com/color/48/000000/rain.png")
-                    }
 
                     var pTemperatureK = response5day.list[i].main.temp;
                     console.log(skyconditions);
@@ -166,7 +157,7 @@ function getWeather(cityName) {
     
   }
 
-  //Click function to each Li 
+  //display search results
   $(document).on("click", "#listC", function() {
     var thisCity = $(this).attr("data");
     getWeather(thisCity);
